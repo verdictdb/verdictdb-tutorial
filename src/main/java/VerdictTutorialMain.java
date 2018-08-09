@@ -77,6 +77,7 @@ public class VerdictTutorialMain {
     System.out.println("Time Taken = " + time + " s");
     rs1.close();
 
+    watch.reset();
     watch.start();
     ResultSet rs2 =
         verdictConn.createStatement()
