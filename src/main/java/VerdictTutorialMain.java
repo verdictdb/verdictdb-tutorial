@@ -71,7 +71,7 @@ public class VerdictTutorialMain {
             .executeQuery(String.format("SELECT avg(l_extendedprice) FROM %s.lineitem", database));
     watch.stop();
     if (rs1.next()) {
-      System.out.println("Wihtout VerdictDB: average(l_extendedprice) = " + rs1.getDouble(1));
+      System.out.println("Without VerdictDB: average(l_extendedprice) = " + rs1.getDouble(1));
     }
     long time = watch.elapsedTime(TimeUnit.SECONDS);
     System.out.println("Time Taken = " + time + " s");
@@ -84,7 +84,7 @@ public class VerdictTutorialMain {
             .executeQuery(String.format("SELECT avg(l_extendedprice) FROM %s.lineitem", database));
     watch.stop();
     if (rs2.next()) {
-      System.out.println("Wiht VerdictDB: average(l_extendedprice) = " + rs2.getDouble(1));
+      System.out.println("With VerdictDB: average(l_extendedprice) = " + rs2.getDouble(1));
     }
     time = watch.elapsedTime(TimeUnit.SECONDS);
     System.out.println("Time Taken = " + time + " s");
