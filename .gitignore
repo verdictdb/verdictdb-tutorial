@@ -1,10 +1,15 @@
 .idea
 .idea/*
 *.iml
-/target/
+target/
 *.log
+.DS_Store
 
 # Probably eclipse
 .project
 .settings
 .classpath
+
+# Spark
+metastore_db/
+spark-warehouse/
