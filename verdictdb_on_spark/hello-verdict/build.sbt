@@ -1,6 +1,7 @@
 import Dependencies._
 
 scalaVersion := "2.11.1"
+resolvers += Resolver.mavenLocal
 
 lazy val root = (project in file(".")).
   settings(
@@ -12,7 +13,7 @@ lazy val root = (project in file(".")).
     name := "Hello",
     libraryDependencies ++= Seq(
       scalaTest % Test,
-      "org.verdictdb" % "verdictdb-core" % "0.5.4",
+      "org.verdictdb" % "verdictdb-core" % "0.5.4-SNAPSHOT",
       "org.apache.spark" %% "spark-core" % "2.3.1" % "provided",
       "org.apache.spark" %% "spark-sql" % "2.3.1" % "provided"
     )

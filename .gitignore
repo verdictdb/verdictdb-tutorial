@@ -13,3 +13,6 @@ target/
 # Spark
 metastore_db/
 spark-warehouse/
+
+# Scala
+lib_managed/

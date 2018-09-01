@@ -1,6 +1,8 @@
 package example
 
 import org.apache.spark.sql.SparkSession
+import org.verdictdb.VerdictContext
+import org.verdictdb.connection.SparkConnection
 import scala.util.Random
 
 object Hello extends App {
@@ -11,13 +13,16 @@ object Hello extends App {
     .getOrCreate()
   spark.sparkContext.setLogLevel("ERROR")
   import spark.implicits._
+  val verdict = VerdictContext.fromSparkSession(spark)
 
-  insertData(spark)
-  val query = "select count(*) from myschema.sales"
-  val df = spark.sql(query)
-  df.show()
+  // prepare data
+  prepareData(spark, verdict)
 
-  def insertData(spark: SparkSession): Unit = {
+  // query
+  val rs = verdict.sql("select count(*) from myschema.sales")
+  rs.printCsv()
+
+  def prepareData(spark: SparkSession, verdict: VerdictContext): Unit = {
     // create a schema and a table
     spark.sql("DROP SCHEMA IF EXISTS myschema CASCADE")
     spark.sql("CREATE SCHEMA IF NOT EXISTS myschema")
@@ -38,5 +43,10 @@ object Hello extends App {
       }
     }
     spark.sql(query)
+
+    verdict.sql("BYPASS DROP TABLE IF EXISTS myschema.sales_scramble")
+    verdict.sql("BYPASS DROP SCHEMA IF EXISTS verdictdbtemp CASCADE")
+    verdict.sql("BYPASS DROP SCHEMA IF EXISTS verdictdbmeta CASCADE")
+    verdict.sql("CREATE SCRAMBLE myschema.sales_scramble FROM myschema.sales BLOCKSIZE 100")
   }
 }
