@@ -7,16 +7,42 @@ import java.util.concurrent.TimeUnit;
 public class VerdictTutorialMain {
 
   public static void main(String[] args) {
-    if (args.length != 4) {
-      System.out.println("USAGE: VerdictTutorialMain <host> <port> <database> <command>");
+    if (args.length < 4) {
+      System.out.println("USAGE: VerdictTutorialMain <host> <port> <user> <password> <database> <command>");
       System.out.println("Supported command: create, run");
       return;
     }
 
-    String host = args[0];
-    String port = args[1];
-    String database = args[2];
-    String command = args[3];
+    String host, port, database, command, user, password;
+
+    host = "localhost";
+    port = "3306";
+    database = "tpch1g";
+    user = "root";
+    password = "";
+    command = "";
+
+    if (args.length == 4) {
+      // username, password omitted
+      host = args[0];
+      port = args[1];
+      database = args[2];
+      command = args[3];
+    } else if (args.length == 5) {
+      // password omitted
+      host = args[0];
+      port = args[1];
+      user = args[2];
+      database = args[3];
+      command = args[4];
+    } else if (args.length > 5) {
+      host = args[0];
+      port = args[1];
+      user = args[2];
+      password = args[3];
+      database = args[4];
+      command = args[5];
+    }
 
     Connection conn = null;
     Connection mysqlConn = null;
@@ -28,11 +54,10 @@ public class VerdictTutorialMain {
               String.format(
                   "jdbc:verdict:mysql://%s:%s/%s?" + "autoReconnect=true&useSSL=false",
                   host, port, database),
-              "root",
-              "");
+              user, password);
       mysqlConn =
           DriverManager.getConnection(
-              String.format("jdbc:mysql://%s:%s/%s", host, port, database), "root", "");
+              String.format("jdbc:mysql://%s:%s/%s", host, port, database), user, password);
     } catch (SQLException e) {
       e.printStackTrace();
     } catch (ClassNotFoundException e) {
