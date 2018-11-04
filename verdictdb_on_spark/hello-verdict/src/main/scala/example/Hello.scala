@@ -6,6 +6,7 @@ import org.verdictdb.connection.SparkConnection
 import scala.util.Random
 
 object Hello extends App {
+
   val spark = SparkSession
     .builder()
     .appName("VerdictDB basic example")
