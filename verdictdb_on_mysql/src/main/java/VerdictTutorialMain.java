@@ -67,11 +67,14 @@ public class VerdictTutorialMain {
     try {
       switch (command.toLowerCase()) {
         case "create":
-          createScrambleTable(conn, mysqlConn, database);
+          createScrambleTable(conn, mysqlConn, database, "lineitem");
+          createScrambleTable(conn, mysqlConn, database, "orders");
           break;
         case "run":
           runQuery(conn, mysqlConn, database);
           break;
+        case "run2":
+          runQuery2(conn, mysqlConn, database);
         default:
           System.out.println("Unsupported command: " + command);
           System.out.println("Supported command: create, run");
@@ -116,22 +119,66 @@ public class VerdictTutorialMain {
     rs2.close();
   }
 
+  private static void runQuery2(Connection verdictConn, Connection mysqlConn, String database)
+      throws SQLException {
+    mysqlConn.createStatement().execute("SET GLOBAL query_cache_size=0");
+    Stopwatch watch = new Stopwatch();
+    watch.start();
+    ResultSet rs1 =
+        mysqlConn.createStatement()
+        .executeQuery(String.format("SELECT SUM(l_extendedprice * (1 - l_discount)) "
+            + "FROM %s.customer, %s.orders, %s.lineitem "
+            + "WHERE c_mktsegment = 'BUILDING'"
+            + " AND c_custkey = o_custkey"
+            + " AND l_orderkey = o_orderkey", 
+            database, database, database));
+    watch.stop();
+    if (rs1.next()) {
+      System.out.println(
+          "Without VerdictDB: SUM(l_extendedprice * (1 - l_discount)) = "
+              + rs1.getDouble(1));
+    }
+    long time = watch.elapsedTime(TimeUnit.SECONDS);
+    System.out.println("Time Taken = " + time + " s");
+    rs1.close();
+
+    watch.reset();
+    watch.start();
+    ResultSet rs2 =
+        verdictConn.createStatement()
+        .executeQuery(String.format("SELECT SUM(l_extendedprice * (1 - l_discount)) "
+            + "FROM %s.customer, %s.orders, %s.lineitem "
+            + "WHERE c_mktsegment = 'BUILDING'"
+            + " AND c_custkey = o_custkey"
+            + " AND l_orderkey = o_orderkey", 
+            database, database, database));
+    watch.stop();
+    if (rs2.next()) {
+      System.out.println("With VerdictDB: SUM(l_extendedprice * (1 - l_discount)) = "
+          + rs2.getDouble(1));
+    }
+    time = watch.elapsedTime(TimeUnit.SECONDS);
+    System.out.println("Time Taken = " + time + " s");
+    rs2.close();
+  }
+
   private static void createScrambleTable(
-      Connection verdictConn, Connection mysqlConn, String database) throws SQLException {
+      Connection verdictConn, Connection mysqlConn, String database, String table) throws SQLException {
     Statement stmt = verdictConn.createStatement();
-    String dropQuery = String.format("DROP TABLE IF EXISTS %s.lineitem_scramble", database);
+    String dropQuery = 
+        String.format("DROP TABLE IF EXISTS %s.%s_scramble", database, table);
     String createQuery =
         String.format(
-            "CREATE SCRAMBLE %s.lineitem_scramble " + "FROM %s.lineitem",
-            database, database);
+            "CREATE SCRAMBLE %s.%s_scramble " + "FROM %s.%s",
+            database, table, database, table);
     mysqlConn.createStatement().execute(dropQuery);
-    System.out.println("Creating a scrambled table for lineitem...");
+    System.out.println(String.format("Creating a scrambled table for %s...", table));
     Stopwatch watch = new Stopwatch();
     watch.start();
     stmt.execute(createQuery);
     stmt.close();
     watch.stop();
-    System.out.println("Scrambled table for lineitem has been created.");
+    System.out.println(String.format("Scrambled table for %s has been created.", table));
     long time = watch.elapsedTime(TimeUnit.SECONDS);
     System.out.println("Time Taken = " + time + " s");
   }
