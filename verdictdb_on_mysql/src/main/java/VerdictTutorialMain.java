@@ -75,6 +75,7 @@ public class VerdictTutorialMain {
           break;
         case "run2":
           runQuery2(conn, mysqlConn, database);
+          break;
         default:
           System.out.println("Unsupported command: " + command);
           System.out.println("Supported command: create, run");
