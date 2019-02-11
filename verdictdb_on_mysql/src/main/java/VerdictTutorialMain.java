@@ -110,7 +110,7 @@ public class VerdictTutorialMain {
     watch.start();
     ResultSet rs2 =
         verdictConn.createStatement()
-            .executeQuery(String.format("SELECT avg(l_extendedprice) FROM %s.lineitem", database));
+            .executeQuery(String.format("SELECT avg(l_extendedprice) FROM %s.lineitem_scramble", database));
     watch.stop();
     if (rs2.next()) {
       System.out.println("With VerdictDB: average(l_extendedprice) = " + rs2.getDouble(1));
@@ -148,7 +148,7 @@ public class VerdictTutorialMain {
     ResultSet rs2 =
         verdictConn.createStatement()
         .executeQuery(String.format("SELECT SUM(l_extendedprice * (1 - l_discount)) "
-            + "FROM %s.customer, %s.orders, %s.lineitem "
+            + "FROM %s.customer, %s.orders_scramble, %s.lineitem_scramble "
             + "WHERE c_mktsegment = 'BUILDING'"
             + " AND c_custkey = o_custkey"
             + " AND l_orderkey = o_orderkey", 
