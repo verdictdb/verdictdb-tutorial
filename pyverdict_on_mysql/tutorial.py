@@ -17,8 +17,9 @@ def create():
         port=port
     )
     print('Creating a scrambled table for lineitem...')
+    verdict_conn.sql('DROP ALL SCRAMBLE tpch1g.lineitem')
     start = time.time()
-    verdict_conn.sql('CREATE SCRAMBLE tpch1g.lineitem_scramble FROM tpch1g.lineitem')
+    verdict_conn.sql('CREATE SCRAMBLE tpch1g.lineitem_scramble FROM tpch1g.lineitem BLOCKSIZE 100')
     duration = time.time() - start
     verdict_conn.close()
     print('Scrambled table for lineitem has been created.')
@@ -48,7 +49,7 @@ def run():
         port=port
     )
     start = time.time()
-    df = verdict_conn.sql('SELECT avg(l_extendedprice) FROM tpch1g.lineitem')
+    df = verdict_conn.sql('SELECT avg(l_extendedprice) FROM tpch1g.lineitem_scramble')
     duration = time.time() - start
     verdict_conn.close()
     print(df.values)
